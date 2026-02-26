@@ -21,12 +21,12 @@ class Task < ApplicationRecord
   validates :title, presence: true
   validates :priority, presence: true, inclusion: { in: PRIORITIES }
   validates :display_id, presence: true, uniqueness: { scope: :project_id }
-  validates :type, presence: true, inclusion: { in: TYPES }
+  validates :task_type, presence: true, inclusion: { in: TYPES }
   validates :points, numericality: { only_integer: true, allow_nil: true }
 
   before_validation :set_display_id, on: :create
   before_validation :set_default_status, on: :create
-  before_validation :set_default_type, on: :create
+  before_validation :set_default_task_type, on: :create
 
   def code
     return unless project && display_id
@@ -46,7 +46,7 @@ class Task < ApplicationRecord
     self.status = project.project_statuses.ordered.first if project
   end
 
-  def set_default_type
-    self.type ||= 'TASK'
+  def set_default_task_type
+    self.task_type ||= 'TASK'
   end
 end

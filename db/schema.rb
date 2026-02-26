@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_26_152100) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_26_154100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -41,6 +41,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_26_152100) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "attachments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "task_id", null: false
+    t.uuid "uploaded_by_id", null: false
+    t.string "file_url", null: false
+    t.string "file_name", null: false
+    t.string "file_type", null: false
+    t.integer "file_size", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["task_id"], name: "index_attachments_on_task_id"
   end
 
   create_table "project_members", primary_key: ["project_id", "user_id"], force: :cascade do |t|
@@ -111,6 +123,24 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_26_152100) do
     t.index ["project_id", "name"], name: "index_tags_on_project_id_and_name", unique: true
   end
 
+  create_table "task_comments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "task_id", null: false
+    t.uuid "author_id", null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["task_id"], name: "index_task_comments_on_task_id"
+  end
+
+  create_table "task_dependencies", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "blocked_task_id", null: false
+    t.uuid "blocker_task_id", null: false
+    t.string "relation_type", default: "blocks", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["blocked_task_id", "blocker_task_id"], name: "index_task_dependencies_on_blocked_task_id_and_blocker_task_id", unique: true
+  end
+
   create_table "task_tags", id: false, force: :cascade do |t|
     t.uuid "task_id", null: false
     t.uuid "tag_id", null: false
@@ -132,7 +162,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_26_152100) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "subtasks_count", default: 0, null: false
-    t.string "type", default: "TASK", null: false
+    t.string "task_type", default: "TASK", null: false
     t.uuid "sprint_id"
     t.integer "points"
     t.date "start_date"
@@ -172,12 +202,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_26_152100) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "attachments", "tasks", validate: false
+  add_foreign_key "attachments", "users", column: "uploaded_by_id", validate: false
   add_foreign_key "project_members", "projects"
   add_foreign_key "project_members", "users"
   add_foreign_key "project_statuses", "projects"
   add_foreign_key "projects", "users", column: "owner_id"
   add_foreign_key "sprints", "projects", validate: false
   add_foreign_key "tags", "projects", validate: false
+  add_foreign_key "task_comments", "tasks", validate: false
+  add_foreign_key "task_comments", "users", column: "author_id", validate: false
+  add_foreign_key "task_dependencies", "tasks", column: "blocked_task_id", validate: false
+  add_foreign_key "task_dependencies", "tasks", column: "blocker_task_id", validate: false
   add_foreign_key "task_tags", "tags", validate: false
   add_foreign_key "task_tags", "tasks", validate: false
   add_foreign_key "tasks", "project_statuses", column: "status_id", validate: false
