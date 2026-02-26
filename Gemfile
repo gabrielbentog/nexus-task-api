@@ -82,7 +82,7 @@ gem 'kaminari'
 gem 'uuid7'
 
 # Rate limiting
-gem "rack-attack", "~> 6.7"
+gem "rack-attack", "~> 6.8"
 
 # File uploads
 gem "image_processing", "~> 1.12"
