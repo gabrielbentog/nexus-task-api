@@ -1,5 +1,7 @@
+
 class ProjectSerializer < BaseSerializer
   attributes :id, :name, :key, :description, :created_at, :updated_at
+  has_many :tags, serializer: TagSerializer
 
   def owner
     {

@@ -1,3 +1,32 @@
+#### Tags em tarefas
+Cada tarefa pode ter várias tags (etiquetas) associadas.
+
+Para associar tags a uma tarefa, envie um array de IDs de tags no campo `tag_ids` ao criar ou atualizar:
+
+```
+{
+  "task": {
+    "title": "Corrigir bug",
+    "priority": "HIGH",
+    "status_id": "uuid-do-status",
+    "tag_ids": ["uuid-tag-bug", "uuid-tag-frontend"]
+  }
+}
+```
+
+No JSON de resposta, o campo `tags` trará as etiquetas associadas à tarefa.
+
+#### Exemplo de resposta com tags
+```
+{
+  "id": "uuid-da-tarefa",
+  ...,
+  "tags": [
+    { "id": "uuid-tag-bug", "name": "bug", "color": "#FF0000" },
+    { "id": "uuid-tag-frontend", "name": "frontend", "color": "#00FF00" }
+  ]
+}
+```
 #### Quadro Kanban
 `GET /api/projects/:project_id/tasks/kanban`
 

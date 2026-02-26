@@ -6,6 +6,7 @@ class Project < ApplicationRecord
   has_many :members, through: :project_members, source: :user
   has_many :project_statuses, dependent: :destroy
   has_many :tasks, dependent: :destroy
+  has_many :tags, dependent: :destroy
 
   validates :name, presence: true
   validates :key, presence: true, uniqueness: true

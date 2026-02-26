@@ -16,6 +16,7 @@ Rails.application.routes.draw do
             get 'kanban'
           end
         end
+        resources :tags, controller: 'tags', only: [:index, :show, :create, :update, :destroy]
     end
   end
 end

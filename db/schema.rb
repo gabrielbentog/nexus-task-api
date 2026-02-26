@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_26_150000) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_26_151100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -89,6 +89,23 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_26_150000) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "tags", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "project_id", null: false
+    t.string "name", null: false
+    t.string "color", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id", "name"], name: "index_tags_on_project_id_and_name", unique: true
+  end
+
+  create_table "task_tags", id: false, force: :cascade do |t|
+    t.uuid "task_id", null: false
+    t.uuid "tag_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["task_id", "tag_id"], name: "index_task_tags_on_task_id_and_tag_id", unique: true
+  end
+
   create_table "tasks", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "project_id", null: false
     t.uuid "status_id", null: false
@@ -140,6 +157,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_26_150000) do
   add_foreign_key "project_members", "users"
   add_foreign_key "project_statuses", "projects"
   add_foreign_key "projects", "users", column: "owner_id"
+  add_foreign_key "tags", "projects", validate: false
+  add_foreign_key "task_tags", "tags", validate: false
+  add_foreign_key "task_tags", "tasks", validate: false
   add_foreign_key "tasks", "project_statuses", column: "status_id", validate: false
   add_foreign_key "tasks", "projects", validate: false
   add_foreign_key "tasks", "tasks", column: "parent_id", validate: false
