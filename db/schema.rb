@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_26_141740) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_26_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -89,6 +89,25 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_26_141740) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "tasks", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "project_id", null: false
+    t.uuid "status_id", null: false
+    t.string "title", null: false
+    t.text "description"
+    t.string "priority", null: false
+    t.uuid "assignee_id"
+    t.uuid "parent_id"
+    t.datetime "due_date"
+    t.integer "display_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "subtasks_count", default: 0, null: false
+    t.index ["assignee_id"], name: "index_tasks_on_assignee_id"
+    t.index ["parent_id"], name: "index_tasks_on_parent_id"
+    t.index ["project_id", "display_id"], name: "index_tasks_on_project_id_and_display_id", unique: true
+    t.index ["status_id"], name: "index_tasks_on_status_id"
+  end
+
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "provider", default: "email", null: false
     t.string "uid", default: "", null: false
@@ -121,4 +140,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_26_141740) do
   add_foreign_key "project_members", "users"
   add_foreign_key "project_statuses", "projects"
   add_foreign_key "projects", "users", column: "owner_id"
+  add_foreign_key "tasks", "project_statuses", column: "status_id", validate: false
+  add_foreign_key "tasks", "projects", validate: false
+  add_foreign_key "tasks", "tasks", column: "parent_id", validate: false
+  add_foreign_key "tasks", "users", column: "assignee_id", validate: false
 end

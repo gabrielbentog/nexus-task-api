@@ -152,12 +152,46 @@ members_data.each do |member_data|
   end
 end
 
+puts "\n📝 Criando tarefas exemplo..."
+
+created_projects.each do |project|
+  backlog = project.project_statuses.find_by(name: 'A Fazer') || project.project_statuses.ordered.first
+  doing = project.project_statuses.find_by(name: 'Em Andamento') || project.project_statuses.ordered.second
+  done = project.project_statuses.find_by(name: 'Concluído') || project.project_statuses.ordered.last
+
+  Task.find_or_create_by!(project: project, display_id: 1) do |t|
+    t.title = "Primeira tarefa do projeto #{project.name}"
+    t.description = "Descrição inicial"
+    t.priority = "MEDIUM"
+    t.status = backlog
+    t.assignee = project.owner
+    t.due_date = 3.days.from_now
+  end
+
+  Task.find_or_create_by!(project: project, display_id: 2) do |t|
+    t.title = "Tarefa em andamento"
+    t.priority = "HIGH"
+    t.status = doing
+    t.assignee = User.where.not(id: project.owner_id).first
+    t.due_date = 5.days.from_now
+  end
+
+  Task.find_or_create_by!(project: project, display_id: 3) do |t|
+    t.title = "Tarefa concluída"
+    t.priority = "LOW"
+    t.status = done
+    t.assignee = User.where.not(id: project.owner_id).second
+    t.due_date = 1.day.from_now
+  end
+end
+
 puts "\n✨ Seeds concluído com sucesso!"
 puts "\n📊 Resumo:"
 puts "  👤 Usuários: #{User.count}"
 puts "  📁 Projetos: #{Project.count}"
 puts "  👥 Membros: #{ProjectMember.count}"
 puts "  📊 Status: #{ProjectStatus.count}"
+puts "  📝 Tarefas: #{Task.count}"
 
 puts "\n🔑 Credenciais para teste:"
 puts "  Email: joao@example.com | Senha: password123"

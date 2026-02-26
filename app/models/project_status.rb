@@ -1,5 +1,6 @@
 class ProjectStatus < ApplicationRecord
   belongs_to :project
+  has_many :tasks, foreign_key: 'status_id', dependent: :nullify
 
   CATEGORIES = %w[TODO IN_PROGRESS DONE].freeze
 

@@ -11,6 +11,11 @@ Rails.application.routes.draw do
     resources :projects do
       resources :members, controller: 'project_members', only: [:index, :create, :update, :destroy]
       resources :statuses, controller: 'project_statuses', only: [:index, :create, :update, :destroy]
+        resources :tasks, controller: 'tasks', only: [:index, :show, :create, :update, :destroy] do
+          collection do
+            get 'kanban'
+          end
+        end
     end
   end
 end

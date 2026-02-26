@@ -42,7 +42,11 @@ class Api::ApiController < ActionController::API
     body = response.body.presence && JSON.parse(response.body) rescue nil
     return unless body
 
-    camelized = body.deep_transform_keys { |key| key.to_s.camelize(:lower) }
+    camelized = if body.is_a?(Array)
+      body.map { |item| item.respond_to?(:deep_transform_keys) ? item.deep_transform_keys { |key| key.to_s.camelize(:lower) } : item }
+    else
+      body.deep_transform_keys { |key| key.to_s.camelize(:lower) }
+    end
     response.body = camelized.to_json
   end
 
