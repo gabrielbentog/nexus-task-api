@@ -10,6 +10,11 @@ class Task < ApplicationRecord
   has_many :tags, through: :task_tags
   belongs_to :sprint, optional: true
 
+  has_many :blocked_dependencies, class_name: 'TaskDependency', foreign_key: :blocked_task_id, dependent: :destroy
+  has_many :blocker_dependencies, class_name: 'TaskDependency', foreign_key: :blocker_task_id, dependent: :destroy
+  has_many :blockers, through: :blocked_dependencies, source: :blocker_task
+  has_many :blocked_tasks, through: :blocker_dependencies, source: :blocked_task
+
   PRIORITIES = %w[LOW MEDIUM HIGH URGENT].freeze
   TYPES = %w[TASK EPIC].freeze
 
