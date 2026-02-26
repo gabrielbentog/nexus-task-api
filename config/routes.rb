@@ -8,6 +8,8 @@ Rails.application.routes.draw do
     post 'authenticate', to: 'authentication#authenticate'
 
     resources :users
-    resources :projects
+    resources :projects do
+      resources :members, controller: 'project_members', only: [:index, :create, :update, :destroy]
+    end
   end
 end

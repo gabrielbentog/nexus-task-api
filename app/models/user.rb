@@ -11,6 +11,8 @@ class User < ApplicationRecord
   # Associations
   has_one_attached :avatar
   has_many :projects, foreign_key: 'owner_id', dependent: :destroy
+  has_many :project_members, dependent: :destroy
+  has_many :member_projects, through: :project_members, source: :project
 
   # Validations
   validates :email, presence: true, uniqueness: true
