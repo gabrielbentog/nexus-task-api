@@ -7,6 +7,7 @@ puts "🌱 Iniciando seeds..."
 # Limpar dados existentes (apenas em desenvolvimento)
 if Rails.env.development?
   puts "🧹 Limpando dados existentes..."
+  ProjectStatus.destroy_all
   ProjectMember.destroy_all
   Project.destroy_all
   User.destroy_all
@@ -156,6 +157,7 @@ puts "\n📊 Resumo:"
 puts "  👤 Usuários: #{User.count}"
 puts "  📁 Projetos: #{Project.count}"
 puts "  👥 Membros: #{ProjectMember.count}"
+puts "  📊 Status: #{ProjectStatus.count}"
 
 puts "\n🔑 Credenciais para teste:"
 puts "  Email: joao@example.com | Senha: password123"

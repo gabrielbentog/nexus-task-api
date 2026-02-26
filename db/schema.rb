@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_26_133247) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_26_141740) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -52,6 +52,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_26_133247) do
     t.datetime "updated_at", null: false
     t.index ["project_id"], name: "index_project_members_on_project_id"
     t.index ["user_id"], name: "index_project_members_on_user_id"
+  end
+
+  create_table "project_statuses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "project_id", null: false
+    t.string "name", null: false
+    t.integer "order", default: 0, null: false
+    t.string "category", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_project_statuses_on_project_id"
   end
 
   create_table "projects", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -109,5 +119,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_26_133247) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "project_members", "projects"
   add_foreign_key "project_members", "users"
+  add_foreign_key "project_statuses", "projects"
   add_foreign_key "projects", "users", column: "owner_id"
 end

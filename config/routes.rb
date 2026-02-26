@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     resources :users
     resources :projects do
       resources :members, controller: 'project_members', only: [:index, :create, :update, :destroy]
+      resources :statuses, controller: 'project_statuses', only: [:index, :create, :update, :destroy]
     end
   end
 end
