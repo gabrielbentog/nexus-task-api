@@ -1,0 +1,32 @@
+# PostgreSQL. Versions 9.3 and up are supported.
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: nexus_task_api_development
+
+test:
+  <<: *default
+  database: nexus_task_api_test
+
+production:
+  primary: &primary_production
+    <<: *default
+    database: nexus_task_api_production
+    username: nexus_task_api
+    password: <%= ENV["ACME_RAILS_API_STARTER_DATABASE_PASSWORD"] %>
+  cache:
+    <<: *primary_production
+    database: nexus_task_api_production_cache
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *primary_production
+    database: nexus_task_api_production_queue
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *primary_production
+    database: nexus_task_api_production_cable
+    migrations_paths: db/cable_migrate
