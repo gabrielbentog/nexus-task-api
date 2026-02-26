@@ -17,7 +17,7 @@ production:
     <<: *default
     database: nexus_task_api_production
     username: nexus_task_api
-    password: <%= ENV["ACME_RAILS_API_STARTER_DATABASE_PASSWORD"] %>
+    password: <%= ENV["NEXUS_TASK_DATABASE_PASSWORD"] %>
   cache:
     <<: *primary_production
     database: nexus_task_api_production_cache
