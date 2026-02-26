@@ -1,4 +1,3 @@
-
 class Task < ApplicationRecord
   include Filterable
 
@@ -9,16 +8,20 @@ class Task < ApplicationRecord
   has_many :subtasks, class_name: 'Task', foreign_key: 'parent_id', dependent: :nullify
   has_many :task_tags, dependent: :destroy
   has_many :tags, through: :task_tags
+  belongs_to :sprint, optional: true
 
   PRIORITIES = %w[LOW MEDIUM HIGH URGENT].freeze
+  TYPES = %w[TASK EPIC].freeze
 
   validates :title, presence: true
   validates :priority, presence: true, inclusion: { in: PRIORITIES }
   validates :display_id, presence: true, uniqueness: { scope: :project_id }
-
+  validates :type, presence: true, inclusion: { in: TYPES }
+  validates :points, numericality: { only_integer: true, allow_nil: true }
 
   before_validation :set_display_id, on: :create
   before_validation :set_default_status, on: :create
+  before_validation :set_default_type, on: :create
 
   def code
     return unless project && display_id
@@ -36,5 +39,9 @@ class Task < ApplicationRecord
   def set_default_status
     return if status_id.present?
     self.status = project.project_statuses.ordered.first if project
+  end
+
+  def set_default_type
+    self.type ||= 'TASK'
   end
 end

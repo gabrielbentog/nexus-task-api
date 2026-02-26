@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_26_151100) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_26_152100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -89,6 +89,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_26_151100) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "sprints", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "project_id", null: false
+    t.string "name", null: false
+    t.text "goal"
+    t.date "start_date", null: false
+    t.date "end_date", null: false
+    t.string "status", default: "PLANNED", null: false
+    t.integer "velocity"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id", "start_date", "end_date"], name: "index_sprints_on_project_id_and_start_date_and_end_date"
+  end
+
   create_table "tags", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "project_id", null: false
     t.string "name", null: false
@@ -119,9 +132,15 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_26_151100) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "subtasks_count", default: 0, null: false
+    t.string "type", default: "TASK", null: false
+    t.uuid "sprint_id"
+    t.integer "points"
+    t.date "start_date"
+    t.date "end_date"
     t.index ["assignee_id"], name: "index_tasks_on_assignee_id"
     t.index ["parent_id"], name: "index_tasks_on_parent_id"
     t.index ["project_id", "display_id"], name: "index_tasks_on_project_id_and_display_id", unique: true
+    t.index ["sprint_id"], name: "index_tasks_on_sprint_id"
     t.index ["status_id"], name: "index_tasks_on_status_id"
   end
 
@@ -157,11 +176,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_26_151100) do
   add_foreign_key "project_members", "users"
   add_foreign_key "project_statuses", "projects"
   add_foreign_key "projects", "users", column: "owner_id"
+  add_foreign_key "sprints", "projects", validate: false
   add_foreign_key "tags", "projects", validate: false
   add_foreign_key "task_tags", "tags", validate: false
   add_foreign_key "task_tags", "tasks", validate: false
   add_foreign_key "tasks", "project_statuses", column: "status_id", validate: false
   add_foreign_key "tasks", "projects", validate: false
+  add_foreign_key "tasks", "sprints", validate: false
   add_foreign_key "tasks", "tasks", column: "parent_id", validate: false
   add_foreign_key "tasks", "users", column: "assignee_id", validate: false
 end

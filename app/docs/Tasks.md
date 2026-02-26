@@ -112,11 +112,15 @@ Body:
 #### Campos importantes
 - `code`: Código único da tarefa (ex: NEX-1)
 - `display_id`: Sequencial por projeto
+- `type`: Enum ('TASK', 'EPIC')
+- `sprint_id`: FK para Sprint (opcional)
+- `points`: Inteiro (Story Points, opcional)
 - `priority`: Enum (LOW, MEDIUM, HIGH, URGENT)
 - `status_id`: FK para ProjectStatus
 - `assignee_id`: FK para User
 - `parent_id`: FK para Task (subtarefas)
 - `due_date`: Data de vencimento
+- `start_date`/`end_date`: Datas de início e fim (opcional)
 
 #### Exemplo de resposta
 ```
@@ -124,9 +128,14 @@ Body:
   "id": "uuid-da-tarefa",
   "code": "NEX-1",
   "displayId": 1,
+  "type": "EPIC",
+  "sprintId": "uuid-da-sprint",
+  "points": 8,
   "title": "Primeira tarefa do projeto Nexus Task Manager",
   "description": "Descrição inicial",
   "priority": "MEDIUM",
+  "startDate": "2026-02-28",
+  "endDate": "2026-03-01",
   "dueDate": "2026-03-01T12:00:00Z",
   "status": {
     "id": "uuid-do-status",

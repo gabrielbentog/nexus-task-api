@@ -17,6 +17,7 @@ Rails.application.routes.draw do
           end
         end
         resources :tags, controller: 'tags', only: [:index, :show, :create, :update, :destroy]
+        resources :sprints, controller: 'sprints', only: [:index, :show, :create, :update, :destroy]
     end
   end
 end

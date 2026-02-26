@@ -7,6 +7,7 @@ class Project < ApplicationRecord
   has_many :project_statuses, dependent: :destroy
   has_many :tasks, dependent: :destroy
   has_many :tags, dependent: :destroy
+  has_many :sprints, dependent: :destroy
 
   validates :name, presence: true
   validates :key, presence: true, uniqueness: true
