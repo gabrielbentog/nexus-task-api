@@ -1,8 +1,9 @@
 class Api::ProjectStatusesController < Api::ApiController
   before_action :set_project
   before_action :check_admin_permission, only: [:create, :update, :destroy]
-  before_action :set_project_status, only: [:update, :destroy]
+  before_action :set_project_status, only: [:update, :destroy, :reorder, :move_tasks, :clear]
 
+  # GET /api/projects/:project_id/statuses
   def index
     statuses = @project.project_statuses.ordered
     render json: statuses, each_serializer: ProjectStatusSerializer, status: :ok
@@ -24,6 +25,31 @@ class Api::ProjectStatusesController < Api::ApiController
     else
       render json: { errors: @project_status.errors.full_messages }, status: :unprocessable_entity
     end
+  end
+
+  # POST /api/projects/:project_id/statuses/:id/reorder
+  def reorder
+    position = params.require(:position)
+    if @project_status.update(order: position)
+      render json: @project_status, serializer: ProjectStatusSerializer
+    else
+      render json: { errors: @project_status.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  # POST /api/projects/:project_id/statuses/:id/move_tasks
+  def move_tasks
+    target_id = params.require(:targetColumnId)
+    target = @project.project_statuses.find(target_id)
+    @project_status.tasks.update_all(status_id: target.id)
+    head :no_content
+  end
+
+  # DELETE /api/projects/:project_id/statuses/:id/clear
+  def clear
+    # remove all tasks assigned to this status
+    @project_status.tasks.destroy_all
+    head :no_content
   end
 
   def destroy

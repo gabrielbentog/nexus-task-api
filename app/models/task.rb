@@ -19,7 +19,8 @@ class Task < ApplicationRecord
   TYPES = %w[TASK EPIC].freeze
 
   validates :title, presence: true
-  validates :priority, presence: true, inclusion: { in: PRIORITIES }
+  validates :priority, presence: true
+  validate :priority_case_insensitive_inclusion
   validates :display_id, presence: true, uniqueness: { scope: :project_id }
   validates :task_type, presence: true, inclusion: { in: TYPES }
   validates :points, numericality: { only_integer: true, allow_nil: true }
@@ -34,6 +35,13 @@ class Task < ApplicationRecord
   end
 
   private
+
+  def priority_case_insensitive_inclusion
+    return if priority.blank?
+    unless PRIORITIES.map(&:downcase).include?(priority.downcase)
+      errors.add(:priority, :inclusion, value: priority)
+    end
+  end
 
   def set_display_id
     return if display_id.present?

@@ -19,7 +19,7 @@ class Api::TasksController < Api::ApiController
     result = statuses.map do |status|
       {
         status: ProjectStatusSerializer.new(status).as_json,
-        tasks: status.tasks.order(:display_id).map { |t| TaskSerializer.new(t).as_json }
+        tasks: status.tasks.where.not(task_type: "EPIC", parent_id: nil).order(:display_id).map { |t| TaskSerializer.new(t).as_json }
       }
     end
     render json: { data: result }, status: :ok

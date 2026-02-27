@@ -10,7 +10,13 @@ Rails.application.routes.draw do
     resources :users
     resources :projects do
       resources :members, controller: 'project_members', only: [:index, :create, :update, :destroy]
-      resources :statuses, controller: 'project_statuses', only: [:index, :create, :update, :destroy]
+      resources :statuses, controller: 'project_statuses', only: [:index, :create, :update, :destroy] do
+        member do
+          post 'reorder'
+          post 'move_tasks'
+          delete 'clear'
+        end
+      end
         resources :tasks, controller: 'tasks', only: [:index, :show, :create, :update, :destroy] do
           collection do
             get 'kanban'
