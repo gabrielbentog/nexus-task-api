@@ -9,7 +9,7 @@ class Api::TasksController < Api::ApiController
     tasks = @project.tasks.includes(:status, :assignee).order(:display_id)
     tasks = tasks.apply_filters(params)
 
-    meta = generate_meta(tasks)
+    meta = generate_meta(tasks) if params[:page].present? || params[:filter].present? || params[:sort].present?
     render json: tasks, each_serializer: TaskSerializer, meta: meta, status: :ok
   end
 
@@ -19,7 +19,7 @@ class Api::TasksController < Api::ApiController
     result = statuses.map do |status|
       {
         status: ProjectStatusSerializer.new(status).as_json,
-        tasks: status.tasks.where.not(task_type: "EPIC", parent_id: nil).order(:display_id).map { |t| TaskSerializer.new(t).as_json }
+        tasks: status.tasks.where.not(task_type: "EPIC").where(parent_id: nil).order(:display_id).map { |t| TaskSerializer.new(t).as_json }
       }
     end
     render json: { data: result }, status: :ok

@@ -3,6 +3,7 @@ class Api::ProjectMembersController < Api::ApiController
   before_action :check_admin_permission, only: [:create, :update, :destroy]
   before_action :set_project_member, only: [:update, :destroy]
 
+  # GET /api/projects/:project_id/members
   def index
     members = @project.project_members.includes(:user).order(joined_at: :asc)
     render json: members, each_serializer: ProjectMemberSerializer, status: :ok

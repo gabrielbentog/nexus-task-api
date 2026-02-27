@@ -12,7 +12,13 @@ module Filterable
       # Filtros simples (por coluna)
       if filters.present?
         filters.each do |key, value|
-          results = results.where(key => value) if column_names.include?(key.to_s)
+          results = if value == "null"
+            results.where("#{key} IS NULL")
+          elsif value == "not_null"
+            results.where("#{key} IS NOT NULL")
+          else
+            results.where(key => value) if column_names.include?(key.to_s)
+          end
         end
       end
 
@@ -24,7 +30,7 @@ module Filterable
 
       # Paginação (com kaminari ou pagy)
       page = (params_page&.dig(:number) || 1).to_i
-      per_page = (params_page&.dig(:size) || results.count).to_i
+      per_page = (params_page&.dig(:size) || results.count.zero? ? 1 : results.count).to_i
       results = results.page(page).per(per_page)
 
       results

@@ -39,7 +39,7 @@ class Api::ProjectStatusesController < Api::ApiController
 
   # POST /api/projects/:project_id/statuses/:id/move_tasks
   def move_tasks
-    target_id = params.require(:targetColumnId)
+    target_id = params.require(:target_column_id)
     target = @project.project_statuses.find(target_id)
     @project_status.tasks.update_all(status_id: target.id)
     head :no_content
