@@ -25,6 +25,21 @@ class Api::TasksController < Api::ApiController
     render json: { data: result }, status: :ok
   end
 
+  # GET /api/projects/:project_id/tasks/timeline
+  def timeline
+    # Retorna apenas EPICs e suas subtasks diretas
+    epics = @project.tasks.where(task_type: "EPIC").includes(:status, :assignee, subtasks: [:status, :assignee]).order(:display_id)
+
+    result = epics.map do |epic|
+      {
+        epic: TaskSerializer.new(epic).as_json,
+        subtasks: epic.subtasks.where.not(task_type: "EPIC").order(:display_id).map { |t| TaskSerializer.new(t).as_json }
+      }
+    end
+
+    render json: { data: result }, status: :ok
+  end
+
   def show
     render json: @task, serializer: TaskSerializer
   end
@@ -76,6 +91,6 @@ class Api::TasksController < Api::ApiController
   end
 
   def task_params
-    params.require(:task).permit(:title, :description, :priority, :status_id, :assignee_id, :parent_id, :due_date)
+    params.require(:task).permit(:title, :description, :priority, :status_id, :assignee_id, :parent_id, :due_date, :task_type, :start_date, :end_date, :sprint_id, :points)
   end
 end

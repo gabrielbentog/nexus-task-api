@@ -30,7 +30,7 @@ module Filterable
 
       # Paginação (com kaminari ou pagy)
       page = (params_page&.dig(:number) || 1).to_i
-      per_page = (params_page&.dig(:size) || results.count.zero? ? 1 : results.count).to_i
+      per_page = (params_page&.dig(:size) || (results.count.zero? ? 1 : results.count)).to_i
       results = results.page(page).per(per_page)
 
       results

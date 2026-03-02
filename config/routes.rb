@@ -20,6 +20,7 @@ Rails.application.routes.draw do
         resources :tasks, controller: 'tasks', only: [:index, :show, :create, :update, :destroy] do
           collection do
             get 'kanban'
+            get 'timeline'
           end
         end
         resources :tags, controller: 'tags', only: [:index, :show, :create, :update, :destroy]
